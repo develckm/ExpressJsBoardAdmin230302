@@ -10,6 +10,9 @@ block content
         div.form-floating.mb-3
             input#pw.form-control(name='pw', type='password', value="admin123", placeholder="??")
             label(for='pw') 비밀번호
+        div.form-check
+            input#autoLogin.form-check-input(type="checkbox", name="autoLogin" value="1")
+            label(for="autoLogin").form-check-label 로그인 일주일간 유지
         div.text-end.mb-5
             button#resetUserBtn.btn.btn-outline-warning.me-3(type='reset') 초기화
             button#addUserBtn.btn.btn-outline-primary(type='submit') 로그인

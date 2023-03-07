@@ -1,11 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const userService=require("../model/service/UsersService");
-
+const cookieParams = {
+  httpOnly: true, //http 통신에서만 쿠키를사용하겠나? (쿠키 탈취 예방)
+  signed: true, //서명 작성된 쿠키를 사용하겠나?
+  maxAge: 7*24*60*60*1000,
+  //plain : true //서명 작성하지 않는 쿠키 생성시
+};
 router.get("/login.do",(req, res)=>{
   res.render("users/login");
 
 });
+
+
+
 router.get("/logout.do",async (req,res)=>{
   //세션을 만료하거나 삭제하는 방법
   //1. 최초 세션을 만들고 30분 뒤 쿠키가 삭제되고 다시 서버에 요청하면 자동으로 서버의 session 도 삭제
@@ -14,18 +22,27 @@ router.get("/logout.do",async (req,res)=>{
   //4. delete req.session.key (권장 하지 않음!)
   req.session.destroy((err)=>{
     if(err) console.error(err); //거의 발생하지 않는다.
+    res.cookie("autoLoginUserId","",{plain:true,maxAge:0});
+    res.cookie("autoLoginUserPw","",{plain:true,maxAge:0});
     res.redirect("/");
   })
 });
 router.post("/login.do",async (req, res) => {
-  let uId = req.body.u_id;
-  let pw = req.body.pw;
+  let {u_id,pw,autoLogin}= req.body;
   let user = null;
-  if (uId && pw) {
-    user = await userService.login(uId, pw);
+  if (u_id && pw) {
+    user = await userService.login(u_id, pw);
   }
+  console.log(user);
   if(user){
     req.session.loginUser=user; //session : 서버에 유지되는 정보
+    if(autoLogin){
+      //쿠키 설정
+      res.cookie("autoLoginUserId",user.u_id,cookieParams);
+      res.cookie("autoLoginUserPw",user.pw,cookieParams);
+
+      //res.cookie("autoLoginUserId",user.u_id,{expires:new Date(Date.now()+(7*24*60*60*1000))});
+    }
     res.redirect("/");
   }else{
     res.redirect("/users/login.do");
