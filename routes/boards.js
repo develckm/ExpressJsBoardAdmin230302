@@ -35,7 +35,7 @@ router.post("/insert.do",async (req,res)=>{
 
 router.get("/:bId/detail.do", async (req,res)=>{
     const board=await boardService.detail(req.params.bId);
-    console.log(board);
+    //console.log(board);
     if(board) {
         res.render("boards/update", {board:board});
     }else {

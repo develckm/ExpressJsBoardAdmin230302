@@ -2,11 +2,13 @@ const pool=require("../db/WebAppBoardPool");
 const BoardsDao = require("../dao/BoardsDao");
 const BoardImsDao = require("../dao/BoardImgsDao");
 const BoardLikesDao=require("../dao/BoardLikesDao");
-const BoardRepliesDao=require("../dao/BoardRepliesDao")
+const BoardRepliesDao=require("../dao/BoardRepliesDao");
+const ReplyLikesDao=require("../dao/ReplyLikesDao");
 const boardImsDao = new BoardImsDao(pool);
 const boardLikesDao=new BoardLikesDao(pool);
 const boardsDao=new BoardsDao(pool);
 const boardRepliesDao=new BoardRepliesDao(pool);
+const replyLikesDao=new ReplyLikesDao(pool);
 //서버튜닝 : 기능개선없이 성능을 올리는 것
 const PageVo=require("../vo/PageVo");
 class BoardsService{
@@ -35,7 +37,18 @@ class BoardsService{
             for(let i=0; i<board.replies.length; i++){
                 let br_id=board.replies[i].br_id;
                 const replies=await boardRepliesDao.findByParentBrId(br_id);
+                const rls=await replyLikesDao.countStatusByBrId(br_id)
                 board.replies[i].replies=replies;
+                board.replies[i].rls=rls;
+                if(board.replies[i].replies && Array.isArray(board.replies[i].replies)){
+                    for(let j=0; j<board.replies[i].replies.length; j++){
+                        let br_id=board.replies[i].replies[j].br_id;
+                        const replies=await boardRepliesDao.findByParentBrId(br_id);
+                        const rls=await replyLikesDao.countStatusByBrId(br_id)
+                        board.replies[i].replies[j].replies=replies;
+                        board.replies[i].replies[j].rls=rls;
+                    }
+                }
             }
         }
 

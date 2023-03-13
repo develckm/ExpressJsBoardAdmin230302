@@ -1,7 +1,7 @@
 extends ../layout
 block content
     h2.my-4 게시글 리스트
-    form.mx-auto.my-4(method="GET", action="/boards/list.do",style="width:400px")
+    form.mx-auto.mt-4.mb-2(method="GET", action="/boards/list.do",style="width:400px")
         input(type="hidden",value=params.field,name="field")
         input(type="hidden",value=params.value,name="value")
         div.input-group
@@ -21,7 +21,7 @@ block content
                 option(value="ASC", selected=(params.orderDirect === "ASC")) 오름차순
             button.btn.btn-outline-primary 제출
 
-    form.mx-auto.my-4(method="GET", action="/boards/list.do",style="width:400px")
+    form.mx-auto.mb-4(method="GET", action="/boards/list.do",style="width:400px")
         input(type="hidden",value=params.orderField,name="orderField")
         input(type="hidden",value=params.orderDirect,name="orderDirect")
         div.input-group
