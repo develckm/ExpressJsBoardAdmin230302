@@ -18,7 +18,6 @@ class BoardsService{
         const pageVo=new PageVo(page,cnt,reqQuery)
         boards=await boardsDao.findBySearch(pageVo);
         boards.pageVo=pageVo;
-
         return boards;
     }
     async register(board) {
